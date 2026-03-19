@@ -74,7 +74,7 @@ graph TD
 Setelah worker berjalan, Anda dapat berinteraksi langsung melalui endpoint:
 
 ### POST `/process`
-Unggah gambar untuk diproses.
+Unggah gambar untuk diproses oleh engine OCR.
 
 **Request (cURL):**
 ```bash
@@ -82,12 +82,28 @@ curl -X POST http://localhost:8000/process \
   -F "file=@/path/to/kuitansi.jpg"
 ```
 
-**Response:**
+**Penjelasan Response:**
+
+| Field | Tipe Data | Deskripsi |
+|---|---|---|
+| `status` | String | Status akhir proses (`success` atau `error`). |
+| `filename` | String | Nama file gambar yang diproses. |
+| `raw_text` | String | Hasil ekstraksi teks mentah yang digabungkan per baris dengan spasi. |
+
+**Contoh Response (Success):**
 ```json
 {
   "status": "success",
   "filename": "kuitansi.jpg",
   "raw_text": "TOKO GROSIR JAYA ... TOTAL RP 50.000"
+}
+```
+
+**Contoh Response (Error):**
+```json
+{
+  "status": "error",
+  "message": "File format not supported"
 }
 ```
 
