@@ -1,0 +1,35 @@
+# OCR Worker Configuration
+# Build and run the OCR worker service
+# See: ./ocr-worker/README.md for details
+
+services:
+  # Layanan Mesin OCR (Si Otot)
+  ocr-worker:
+    build:
+      context: ./ocr-worker
+      dockerfile: Dockerfile
+    container_name: ocr_worker_container
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data:z
+      - ./ocr-worker:/app:z
+    tty: true
+    stdin_open: true
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Web Service (Optional - for development)
+  # Uncomment to run the web UI
+  # web:
+  #   build:
+  #     context: ./web
+  #     dockerfile: Dockerfile
+  #   container_name: web_container
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - OCR_WORKER_URL=http://ocr-worker:8000
+  #     - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+  #   depends_on:
+  #     - ocr-worker
+  #   command: npm run dev
