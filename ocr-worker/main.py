@@ -6,6 +6,10 @@ from paddleocr import PaddleOCR
 
 app = FastAPI(title="OCR Worker CPU Only")
 
+# CONFIG
+# Set AUTO_DELETE_FILE=true untuk menghapus file setelah diproses
+AUTO_DELETE_FILE = os.getenv("AUTO_DELETE_FILE", "false").lower() == "true"
+
 # INISIALISASI CPU ONLY
 # use_gpu=False wajib ada agar tidak mencari driver NVIDIA
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
@@ -39,7 +43,11 @@ def process_ocr(file: UploadFile = File(...)):
         if result and result[0]:
             for line in result[0]:
                 raw_lines.append(line[1][0])
-        
+
+        # Hapus file setelah diproses jika AUTO_DELETE_FILE=true
+        if AUTO_DELETE_FILE and os.path.exists(file_path):
+            os.remove(file_path)
+
         return {
             "status": "success",
             "filename": file.filename,
